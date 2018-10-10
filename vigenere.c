@@ -1,3 +1,7 @@
+/*
+* CS50 PSET 2
+*/
+
 #include <cs50.h>
 #include <stdio.h>
 #include <string.h>
