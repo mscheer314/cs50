@@ -1,2 +1,2 @@
 # cs50
-edX CS50 exercises
+edX CS50 2018 exercises
