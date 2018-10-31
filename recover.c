@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdlib.h>
@@ -29,23 +27,24 @@ int main(int argc, char *argv[])
     }
 
     // setting the cursor to the beginning of the file
-    fseek(inputFile, 0, SEEK_SET);
+   // fseek(inputFile, 0, SEEK_SET);
 
 
     // reading from the file
-    char buffer[BLOCKSIZE];
+    unsigned char buffer[BLOCKSIZE];
     int numOfJPGFound = 0;
     char name[50];
     FILE *img = NULL;
-    while (!feof(inputFile))
+    while (fread(buffer, BLOCKSIZE, 1, inputFile) == 1)
     {
-        fread(buffer, 1, BLOCKSIZE, inputFile);
+        //fread(buffer, 1, BLOCKSIZE, inputFile);
 
         // checking the first four bytes of the buffer for the signature bytes of a JPEG
-        if (buffer[0] == (char)0xff &&
-            buffer[1] == (char)0xd8 &&
-            buffer[2] == (char)0xff &&
-            (buffer[3] & 0xf0) == 0xe0)
+        if (buffer[0] == 0xff &&
+            buffer[1] == 0xd8 &&
+            buffer[2] == 0xff &&
+            buffer[3] >= 0xe0 &&
+            buffer[3] <= 0xef)
         {
             if (numOfJPGFound > 0)
             {
@@ -54,18 +53,18 @@ int main(int argc, char *argv[])
             }
             numOfJPGFound++;
             // print the filename
-            sprintf(name, "%03i.jpg", numOfJPGFound);
+            sprintf(name, "%03i.jpg", numOfJPGFound -1);
             // create the new file
             img = fopen(name, "w");
             // write the block to the file
             fwrite(buffer, BLOCKSIZE, 1, img);
         }
-         // if there is an opened file and the program hasn't reached a new JPG yet while reading
-         else if (numOfJPGFound > 0)
+            // if there is an opened file and the program hasn't reached a new JPG yet while reading
+            else if (numOfJPGFound > 0)
         {
             fwrite(buffer, BLOCKSIZE, 1, img);
         }
     }
     fclose(img);
+    fclose(inputFile);
 }
-
